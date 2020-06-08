@@ -6,7 +6,9 @@ Create these directories:
 
 +-- `_inout` -> put your images, videos etc. in here.
 
-+-- `bin` -> in here go the ffmpeg binaries (https://www.ffmpeg.org/download.html)
++-- `bin` -> in here go the ffmpeg binaries (https://www.ffmpeg.org/download.html).
+
++-- `batchfiles` -> where all the required batchfiles go.
 
 
-Start the batch.
+Start the batch `Batch_Converter.bat`.
