@@ -8,7 +8,5 @@ Create these directories:
 
 +-- `bin` -> in here go the ffmpeg binaries (https://www.ffmpeg.org/download.html).
 
-+-- `batchfiles` -> where all the required batchfiles go.
-
 
 Start the batch `Batch_Converter.bat`.
