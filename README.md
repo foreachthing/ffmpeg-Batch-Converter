@@ -10,3 +10,44 @@ Create these directories:
 
 
 Start the batch `Batch_Converter.bat`.
+
+
+
+    ╔═════════════════════════════════════════════════════════╗
+    ║               FFMPEG simple converter                   ║
+    ╠═════════════════════════════════════════════════════════╣
+    ║   Press number or letter in [] to select your task      ║
+    ║       WARNING: Orginal files will be REPLACED           ║
+    ╚═════════════════════════════════════════════════════════╝
+
+     [1]  Convert to AVI
+
+     [3]  Movie to Frames (filename.mp4 to filename_0000.png)
+     [4]  Frames to Movie (filename_0000.png to filename.mp4)
+     [5]  Convert to h264 (MP4) (set quality [q] first)
+
+     [7]  MTS Deinterlace (loosless; yadif; mcdeint;
+           = very long process but best.)
+     [8]  MP4 Deinterlace (loosless; yadif;  OK.)
+     [9]  MP4 Deinterlace (-deinterlace;     Not Recommended.)
+
+     [a]  Deinterlace to frames (filename.mp4 to filename_0000.png)
+     [b]  Convert MP4 to MP3
+
+     [g]  Convert to GIF ... yes, gif.
+     [h]  Frames to GIF (direct conversion; set framerate [r])
+
+
+     [v]  ffmpeg version
+     [x]  EXIT
+    ---------------------------------------------------------
+     Found 3 file(s) in directory C:\Users\fuerer_g\MyProgramme\ffmpeg\_inout
+
+     Options:
+      [e] Set output height set to               : default
+      [f] Set number of digits 'movie to frames' : 5
+      [q] Set compression quality                : -b:v 40000K
+      [r] Set framerate                          : 24
+
+    READY:
+
