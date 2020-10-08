@@ -45,10 +45,11 @@ rem #####################################################
     
     set "choices= 1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+    ECHO.
     ECHO ***********************************************************
     ECHO *               FFMPEG simple converter                   *
     ECHO ***********************************************************
-    ECHO *   Press number or letter in [] to select your task      * 
+    ECHO *   Press number or letter in [] to select your task      *
     ECHO *       WARNING: Orginal files will be REPLACED           *
     ECHO ***********************************************************
     ECHO.
@@ -99,7 +100,6 @@ rem #####################################################
     CHOICE /T 3600 /D 2 /C:%choices:~1% /N /M:"READY: "
     set "choice=!choices:~%errorlevel%,1!"
     
-
     IF "!choice!"=="0" (
         REM unused
         cls
@@ -151,16 +151,13 @@ rem #####################################################
         GOTO STARTMENU
     )
 
-
     cls
     goto sub_!choice!
 
 
 rem #####################################################
 :sub_1
-    ECHO OFF
-    ECHO #####################################################
-    
+
     for %%f in (*.*) do (
         set "filename=%%~nf%%~xf"
         set "noext=%%~nf"
@@ -209,7 +206,32 @@ rem #####################################################
 
 rem #####################################################
 :sub_4
-    GOTO FRAMES2mpeg
+    SET filename=test
+    SET fileext=ext
+    
+    for %%q in (*.png) do ( 
+        ECHO.
+        SET "framename=%%~nq%%~xq"
+        SET fileext=%%~xq
+    
+        SET "data=%%~nq"
+        FOR /f "tokens=1 delims=_" %%a IN ("%data%") do SET filename=%%a
+        goto frames2mpgcontinue
+    )
+
+:frames2mpgcontinue    
+    
+        TITLE Converting: !filename! ...
+        
+        FOR /f "tokens=1 delims=_" %%a IN ("!framename!") do (
+            SET filename=%%a
+        )
+                
+        set framesname=!filename!_%%0!usernumdigits!d!fileext!
+        ffmpeg -i !framesname! -c:v libx264 -r !userframerate! !quality! !outputscale! !filename!.mp4
+
+        GOTO RESTART
+    REM )
 
 
 rem #####################################################
@@ -242,30 +264,30 @@ rem #####################################################
     GOTO RESTART
 
 
-
+rem #####################################################
 :sub_7
 
     for %%f in (*.*) do (
         set "filename=%%~nf%%~xf"
         set "noext=%%~nf"
 
-        ECHO #####################################################
-        ECHO ####  DEINTERLACING !filename! 
-        ECHO ####  THIS WILL TAKE A LONG TIME
+        ECHO ***********************************************************
+        ECHO ****  DEINTERLACING !filename! 
+        ECHO ****  THIS WILL TAKE A LONG TIME
         ECHO.
 
-        ECHO ####              CREATING TEMP FILE             ####
-        ECHO #####################################################
+        ECHO ****               CREATING TEMP FILE
+        ECHO ***********************************************************
 
         ffmpeg -i "!filename!" -vf yadif=3:1,mcdeint=2:1 -c:a copy -c:v libx264 -preset veryfast !quality! "tmp_!noext!.mp4" -loglevel 24
 
-        ECHO ####            CONVERTING TEMP FILE             ####
-        ECHO #####################################################
+        ECHO ****            CONVERTING TEMP FILE
+        ECHO ***********************************************************
 
         ffmpeg -i "tmp_!noext!.mp4" -c:v libx264 !quality! "deint_!noext!.mp4"
 
-        ECHO ####              CLEANING UP FILES              ####
-        ECHO #####################################################
+        ECHO ****              CLEANING UP FILES
+        ECHO ***********************************************************
         IF EXIST "deint_!noext!.mp4" (
             del "!filename!"
             del "tmp_!noext!.mp4"
@@ -282,8 +304,9 @@ rem #####################################################
     
     :exitsub7
     GOTO RESTART
-    
 
+    
+rem #####################################################
 :sub_8
 
     for %%f in (*.*) do (
@@ -291,8 +314,7 @@ rem #####################################################
         set "noext=%%~nf"
        
         ECHO.
-        ECHO #####################################################
-        ECHO ####  DEINTERLACING !filename!
+        ECHO  DEINTERLACING !filename!
         ECHO.
         ECHO.
 
@@ -316,8 +338,7 @@ REM #####################################################
         set "noext=%%~nf"
        
         ECHO.
-        ECHO #####################################################
-        ECHO ####  DEINTERLACING !filename!
+        ECHO  DEINTERLACING !filename!
         ECHO.
         ECHO.
 
@@ -332,9 +353,11 @@ REM #####################################################
     )
     GOTO RESTART
 
+
 REM #####################################################
 :sub_X
     GOTO EXIT
+
 
 REM #####################################################
 :sub_A
@@ -343,9 +366,8 @@ REM #####################################################
         set "noext=%%~nf"
        
         ECHO.
-        ECHO #####################################################
-        ECHO ####  DEINTERLACING !filename! to Images
-        ECHO ####  THIS WILL TAKE A LONG TIME!
+        ECHO  DEINTERLACING !filename! to Images
+        ECHO  THIS WILL TAKE A LONG TIME!
         ECHO.
         ECHO.
 
@@ -361,6 +383,7 @@ REM #####################################################
     )
     GOTO RESTART
 
+
 REM #####################################################
 :sub_B
 
@@ -369,7 +392,7 @@ REM #####################################################
         set "noext=%%~nf"
         
         ECHO.
-        ECHO ####  CONVERTING !filename! to MP3
+        ECHO  CONVERTING !filename! to MP3
         ECHO.
         ECHO.
 
@@ -393,11 +416,12 @@ REM #####################################################
 :sub_D
     GOTO RESTART
 
+
 rem #####################################################
 :sub_G
 
     for %%f in (*.*) do (
-        ECHO.       
+        ECHO.
         TITLE Converting: %%~nf%%~xf
         
         set "filename=%%~nf%%~xf"
@@ -448,8 +472,7 @@ rem #####################################################
     del "!filename!.flv" /q/f
 
     goto STARTMENU
-    
-    
+
 
 rem #####################################################
 :sub_E
@@ -457,9 +480,9 @@ cls
     SET /A "MinValue=0","MaxValue=10000"
     
     TITLE Set Frame Rate
-    ECHO ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»
-    ECHO º ENTER OUTPUT HEIGHT IN PIXELS                           º
-    ECHO ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼
+    ECHO ***********************************************************
+    ECHO * ENTER OUTPUT HEIGHT IN PIXELS                           *
+    ECHO ***********************************************************
     ECHO.
     ECHO  Standard Values: 200, 480, 720, 1080, 2160, ...
     ECHO  Enter 0 (zero) to disable scaling.
@@ -492,7 +515,8 @@ cls
 
     cls
     goto STARTMENU
-    
+
+
 rem #####################################################
 :sub_F
 cls
@@ -500,9 +524,9 @@ cls
     SET /A "MinValue=0","MaxValue=10"
   
     TITLE Set Number of Digits
-    ECHO ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»
-    ECHO º ENTER NUMBER OF DIGITS FOR MOVIE TO FRAMES              º
-    ECHO ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼
+    ECHO ***********************************************************
+    ECHO * ENTER NUMBER OF DIGITS FOR MOVIE TO FRAMES              *
+    ECHO ***********************************************************
     ECHO.
     ECHO  The number of digits controls the output.
     ECHO  Input: 5 = filename_00000.png
@@ -532,18 +556,18 @@ cls
     ) 
     
     cls
-    goto STARTMENU    
+    goto STARTMENU
 
-    
+
 rem #####################################################
 :sub_R
 cls
     SET /A "MinValue=1","MaxValue=10000"
     
     TITLE Set Frame Rate
-    ECHO ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»
-    ECHO º ENTER FRAME RATE FOR IMAGES TO MP4                      º
-    ECHO ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼
+    ECHO ***********************************************************
+    ECHO * ENTER FRAME RATE FOR IMAGES TO MP4                      *
+    ECHO ***********************************************************
     ECHO.
     ECHO  Enter frames per second for output MP4
     ECHO.
@@ -576,43 +600,13 @@ cls
 
 
 rem #####################################################
-:FRAMES2mpeg
-
-    SET filename=test
-    SET fileext=ext
-    
-    for %%q in (*.png) do ( 
-        ECHO.
-        SET "framename=%%~nq%%~xq"
-        SET fileext=%%~xq
-    
-        SET "data=%%~nq"
-        FOR /f "tokens=1 delims=_" %%a IN ("%data%") do SET filename=%%a
-        goto frames2mpgcontinue
-    )
-
-:frames2mpgcontinue    
-    
-        TITLE Converting: !filename! ...
-        
-        FOR /f "tokens=1 delims=_" %%a IN ("!framename!") do (
-            SET filename=%%a
-        )
-                
-        set framesname=!filename!_%%0!usernumdigits!d!fileext!
-        ffmpeg -i !framesname! -c:v libx264 -r !userframerate! !quality! !outputscale! !filename!.mp4
-
-        GOTO RESTART
-    REM )
-
-rem #####################################################
 :sub_Q
 cls
     TITLE Set Compression Quality
-    ECHO ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»
-    ECHO º CHOOSE QUALITY FOR COMPRESSION                          º
-    ECHO º or 0 to EXIT.                                           º
-    ECHO ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼
+    ECHO ***********************************************************
+    ECHO * CHOOSE QUALITY FOR COMPRESSION                          *
+    ECHO * or 0 to EXIT.                                           *
+    ECHO ***********************************************************
     ECHO.
     ECHO  [1] - loosless (not for AVI)
     ECHO  [2] - Enter custom quality in bits/s
@@ -630,7 +624,6 @@ cls
     ECHO ---------------------------------------------------------
     CHOICE /T 30 /D 0 /C:%choices:~1% /N /M:"Select or type quality: "
     set "choice=!choices:~%errorlevel%,1!"
-    
 
     IF "!choice!"=="0" (
         cls
