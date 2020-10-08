@@ -45,12 +45,12 @@ rem #####################################################
     
     set "choices= 1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-    ECHO ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»
-    ECHO º               FFMPEG simple converter                   º 
-    ECHO ÌÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹
-    ECHO º   Press number or letter in [] to select your task      º 
-    ECHO º       WARNING: Orginal files will be REPLACED           º
-    ECHO ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼
+    ECHO ***********************************************************
+    ECHO *               FFMPEG simple converter                   *
+    ECHO ***********************************************************
+    ECHO *   Press number or letter in [] to select your task      * 
+    ECHO *       WARNING: Orginal files will be REPLACED           *
+    ECHO ***********************************************************
     ECHO.
     ECHO  [1]  Convert to AVI
     ECHO.  
