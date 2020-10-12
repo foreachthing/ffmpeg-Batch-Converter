@@ -79,10 +79,10 @@ rem #####################################################
     ECHO  Options:
 
     IF not !userheight! == 0 (
-        ECHO   [e] Set output height set to               : !userheight! pixels
+        ECHO   [e] Set output height                      : !userheight! pixels
         set outputscale=-vf "scale=-1:!userheight!, scale=trunc(iw/2)*2:!userheight!"
     ) ELSE (
-        ECHO   [e] Set output height set to               : default
+        ECHO   [e] Set output height                      : default
         set "outputscale="
     )
     
@@ -525,7 +525,7 @@ cls
   
     TITLE Set Number of Digits
     ECHO ***********************************************************
-    ECHO * ENTER NUMBER OF DIGITS FOR MOVIE TO FRAMES              *
+    ECHO * NUMBER OF DIGITS FOR MOVIE TO FRAMES                    *
     ECHO ***********************************************************
     ECHO.
     ECHO  The number of digits controls the output.
@@ -566,7 +566,7 @@ cls
     
     TITLE Set Frame Rate
     ECHO ***********************************************************
-    ECHO * ENTER FRAME RATE FOR IMAGES TO MP4                      *
+    ECHO * FRAME RATE FOR IMAGES TO MP4                            *
     ECHO ***********************************************************
     ECHO.
     ECHO  Enter frames per second for output MP4
@@ -604,8 +604,8 @@ rem #####################################################
 cls
     TITLE Set Compression Quality
     ECHO ***********************************************************
-    ECHO * CHOOSE QUALITY FOR COMPRESSION                          *
-    ECHO * or 0 to EXIT.                                           *
+    ECHO * SELECT COMPRESSION QUALITY                              *
+    ECHO * or x to abort                                           *
     ECHO ***********************************************************
     ECHO.
     ECHO  [1] - loosless (not for AVI)
@@ -620,7 +620,7 @@ cls
     ECHO.
     ECHO  [i] - Quality ignored (set to blank)
     ECHO.
-    ECHO  [x] - EXIT (no changes)
+    ECHO  [x] - ABORT (no changes)
     ECHO ---------------------------------------------------------
     CHOICE /T 30 /D 0 /C:%choices:~1% /N /M:"Select or type quality: "
     set "choice=!choices:~%errorlevel%,1!"
