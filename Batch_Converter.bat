@@ -4,6 +4,8 @@ TITLE Please wait ...
 
 setlocal
 
+set "globalparameters=-benchmark"
+
 IF NOT EXIST bin\ffmpeg.exe (
   CLS
   ECHO bin\ffmpeg.exe could not be found.
@@ -25,16 +27,16 @@ REM ECHO Current working directory is: "%INPUTOUTPUT%"
 REM ECHO The ffmpeg\bin directory has been added to PATH
 ECHO.
 
-rem Set Default Quality:
+REM Set Default Quality:
 set "quality=-b:v 20000K"
-set userframerate=24
+set userframeratevalue=0
 set userheight=0
 set usernumdigits=4
 
 goto STARTMENU
 
 
-rem #####################################################
+REM #####################################################
 :STARTMENU
 
     setlocal enableextensions enabledelayedexpansion
@@ -45,9 +47,8 @@ rem #####################################################
     
     set "choices= 1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-    ECHO.
     ECHO ***********************************************************
-    ECHO *               FFMPEG simple converter                   *
+    ECHO *               FFMPEG Simple Converter                   *
     ECHO ***********************************************************
     ECHO *   Press number or letter in [] to select your task      *
     ECHO *       WARNING: Orginal files will be REPLACED           *
@@ -55,26 +56,26 @@ rem #####################################################
     ECHO.
     ECHO  [1]  Convert to AVI
     ECHO.  
-    ECHO  [3]  Movie to Frames (filename.mp4 to filename_0000.png)
-    ECHO  [4]  Frames to Movie (filename_0000.png to filename.mp4)
+    ECHO  [3]  Movie to Frames (filename.mp4 to filename_####.png)
+    ECHO  [4]  Frames to Movie (filename_####.png to filename.mp4)
     ECHO  [5]  Convert to h264 (MP4) (set quality [q] first)
     ECHO.
     ECHO  [7]  MTS Deinterlace (loosless; yadif; mcdeint;
-    ECHO        = very long process but best.)
-    ECHO  [8]  MP4 Deinterlace (loosless; yadif;  OK.)
-    ECHO  [9]  MP4 Deinterlace (-deinterlace;     Not Recommended.)
+    ECHO        = very long process but best)
+    ECHO  [8]  MP4 Deinterlace (loosless; yadif;  OK)
+    ECHO  [9]  MP4 Deinterlace (-deinterlace;     Not Recommended)
     ECHO.
     ECHO  [a]  Deinterlace to frames (filename.mp4 to filename_0000.png)
     ECHO  [b]  Convert MP4 to MP3
     ECHO.
-    ECHO  [g]  Convert to GIF ... yes, gif.
+    ECHO  [g]  Convert to animated GIF
     ECHO  [h]  Frames to GIF (direct conversion; set framerate [r])
-    ECHO.
-    ECHO.
-    ECHO  [v]  ffmpeg version
+    ECHO ---------------------------------------------------------
+    ECHO  [v]  FFMPEG version
     ECHO  [x]  EXIT
     ECHO ---------------------------------------------------------
-    ECHO  Found !nfiles! file(s) in directory !INPUTOUTPUT!
+    ECHO  Found !nfiles! file(s) 
+    ECHO    in directory !INPUTOUTPUT!
     ECHO.
     ECHO  Options:
 
@@ -94,7 +95,22 @@ rem #####################################################
     ) ELSE (
         ECHO   [q] Set compression quality                : ignored
     )
-    ECHO   [r] Set framerate                          : !userframerate!
+    
+    IF not !userframeratevalue! == 0 (
+        set "userframerate=-r !userframeratevalue!"
+        ECHO   [r] Set framerate                          : !userframerate!
+    ) ELSE (
+        ECHO   [r] Set framerate                          : default
+        set "userframerate="
+    )
+    
+    
+    
+    
+    
+    
+    
+    
     ECHO.
 
     CHOICE /T 3600 /D 2 /C:%choices:~1% /N /M:"READY: "
@@ -155,7 +171,8 @@ rem #####################################################
     goto sub_!choice!
 
 
-rem #####################################################
+REM #####################################################
+REM CONVERT TO AVI
 :sub_1
 
     for %%f in (*.*) do (
@@ -167,7 +184,7 @@ rem #####################################################
         ECHO.
         ECHO.
 
-        ffmpeg -i "!filename!" -f avi !quality! !outputscale! "tmp_!noext!.avi"
+        ffmpeg -i "!filename!" -f avi !quality! !outputscale! "tmp_!noext!.avi" !globalparameters!
 
         IF EXIST tmp_!noext!.avi. (
             del !filename!
@@ -179,14 +196,14 @@ rem #####################################################
     GOTO RESTART
     
 
-rem #####################################################
+REM #####################################################
 :sub_2
     REM This does just a restart ...
     REM Do not re-use this as this is the default value for the timer
     GOTO RESTART
     
 
-rem #####################################################
+REM #####################################################
 :sub_3
 
     for %%f in (*.*) do (
@@ -194,7 +211,7 @@ rem #####################################################
         set "noext=%%~nf"
     
         ECHO.
-        ECHO ####  CONVERTING !filename! to frames (.png)
+        ECHO ****  CONVERTING !filename! to frames (.png)
         ECHO.
         ECHO.
 
@@ -204,7 +221,7 @@ rem #####################################################
     GOTO RESTART
 
 
-rem #####################################################
+REM #####################################################
 :sub_4
     SET filename=test
     SET fileext=ext
@@ -226,15 +243,21 @@ rem #####################################################
         FOR /f "tokens=1 delims=_" %%a IN ("!framename!") do (
             SET filename=%%a
         )
+        
+        ECHO.
+        ECHO ****  CONVERTING !framename! to movie (.mp4)
+        ECHO.
+        ECHO.
                 
         set framesname=!filename!_%%0!usernumdigits!d!fileext!
-        ffmpeg -i !framesname! -c:v libx264 -r !userframerate! !quality! !outputscale! !filename!.mp4
+        ffmpeg -i !framesname! -c:v libx264 !userframerate! !quality! !outputscale! !filename!.mp4
 
         GOTO RESTART
     REM )
 
 
-rem #####################################################
+REM #####################################################
+REM CONVERT TO MP4
 :sub_5
 
     for %%f in (*.*) do (
@@ -242,11 +265,11 @@ rem #####################################################
         set "noext=%%~nf"
         
         ECHO.
-        ECHO ####  CONVERTING !filename! to MP4
+        ECHO ****  CONVERTING !filename! to MP4
         ECHO.
         ECHO.
 
-        ffmpeg -i "!filename!" -c:v libx264 !quality! !outputscale! "tmp_!noext!.mp4"
+        ffmpeg -i "!filename!" -c:v libx264 !quality! !outputscale! "tmp_!noext!.mp4" !globalparameters!
 
         IF EXIST "tmp_!noext!.mp4" (
             del "!filename!"
@@ -258,13 +281,13 @@ rem #####################################################
     GOTO RESTART
 
 
-rem #####################################################
+REM #####################################################
 :sub_6
     REM Removed ... nid nötig!
     GOTO RESTART
 
 
-rem #####################################################
+REM #####################################################
 :sub_7
 
     for %%f in (*.*) do (
@@ -306,7 +329,7 @@ rem #####################################################
     GOTO RESTART
 
     
-rem #####################################################
+REM #####################################################
 :sub_8
 
     for %%f in (*.*) do (
@@ -314,7 +337,7 @@ rem #####################################################
         set "noext=%%~nf"
        
         ECHO.
-        ECHO  DEINTERLACING !filename!
+        ECHO ****  DEINTERLACING !filename!
         ECHO.
         ECHO.
 
@@ -338,7 +361,7 @@ REM #####################################################
         set "noext=%%~nf"
        
         ECHO.
-        ECHO  DEINTERLACING !filename!
+        ECHO ****  DEINTERLACING !filename!
         ECHO.
         ECHO.
 
@@ -366,8 +389,8 @@ REM #####################################################
         set "noext=%%~nf"
        
         ECHO.
-        ECHO  DEINTERLACING !filename! to Images
-        ECHO  THIS WILL TAKE A LONG TIME!
+        ECHO ****  DEINTERLACING !filename! to Images
+        ECHO ****  THIS WILL TAKE A LONG TIME!
         ECHO.
         ECHO.
 
@@ -392,7 +415,7 @@ REM #####################################################
         set "noext=%%~nf"
         
         ECHO.
-        ECHO  CONVERTING !filename! to MP3
+        ECHO ****  CONVERTING !filename! to MP3
         ECHO.
         ECHO.
 
@@ -417,7 +440,8 @@ REM #####################################################
     GOTO RESTART
 
 
-rem #####################################################
+REM #####################################################
+REM CONVERT TO ANIMATED GIF
 :sub_G
 
     for %%f in (*.*) do (
@@ -431,8 +455,8 @@ rem #####################################################
         SET "palette=!INPUTOUTPUT!\palette.png"
         ffmpeg -v warning -i "%%~nf%%~xf" -vf "scale=256:-1, palettegen" -y "!palette!"
         
-        SET filters="fps=!userframerate!,scale=-1:!SCALE!:flags=lanczos"
-        ffmpeg -v warning -i "%%~nf%%~xf" -i "!palette!" -lavfi "!filters! [x]; [x][1:v] paletteuse" -y "!filename!.gif"
+        SET filters="scale=-1:!SCALE!:flags=lanczos"
+        ffmpeg !userframerate! -v warning -i "%%~nf%%~xf" -i "!palette!" -lavfi "!filters! [x]; [x][1:v] paletteuse" -y "!filename!.gif"
     
         del "!palette!" /q /f
     )
@@ -440,7 +464,7 @@ rem #####################################################
     goto STARTMENU
 
 
-rem #####################################################
+REM #####################################################
 :sub_H
 
     SET filename=test
@@ -464,9 +488,9 @@ rem #####################################################
     ffmpeg -v warning -i "!framename!" -vf "scale=256:-1, palettegen" -y "palette.png"
             
     set "framesname=!filename!_%%0!usernumdigits!d!fileext!"
-    ffmpeg.exe -framerate !userframerate! -i "!framesname!" !outputscale! !quality! "!filename!.flv"
+    ffmpeg.exe !userframerate! -i "!framesname!" !outputscale! !quality! "!filename!.flv"
     
-    ffmpeg.exe -i "!filename!.flv" -i palette.png -filter_complex "fps=1.2,scale=-1:!userheight!:flags=lanczos[x];[x][1:v]paletteuse" "!filename!.gif"
+    ffmpeg.exe !userframerate! -i "!filename!.flv" -i "palette.png" -filter_complex "scale=-1:!userheight!:flags=lanczos[x];[x][1:v]paletteuse" "!filename!.gif"
     
     del "palette.png" /q /f
     del "!filename!.flv" /q/f
@@ -474,7 +498,7 @@ rem #####################################################
     goto STARTMENU
 
 
-rem #####################################################
+REM #####################################################
 :sub_E
 cls
     SET /A "MinValue=0","MaxValue=10000"
@@ -517,7 +541,7 @@ cls
     goto STARTMENU
 
 
-rem #####################################################
+REM #####################################################
 :sub_F
 cls
 
@@ -559,21 +583,22 @@ cls
     goto STARTMENU
 
 
-rem #####################################################
+REM #####################################################
 :sub_R
 cls
-    SET /A "MinValue=1","MaxValue=10000"
+    SET /A "MinValue=0","MaxValue=10000"
     
     TITLE Set Frame Rate
     ECHO ***********************************************************
     ECHO * FRAME RATE FOR IMAGES TO MP4                            *
     ECHO ***********************************************************
     ECHO.
-    ECHO  Enter frames per second for output MP4
+    ECHO  Enter frames per second for output MP4.
+    ECHO  0 (zero) for default frame rate.
     ECHO.
     ECHO ---------------------------------------------------------
     set /P inputuserframerate=Please input frame rate (range: !MinValue! to !MaxValue!): 
-    set "userframerate=!inputuserframerate!"
+    set "userframeratevalue=!inputuserframerate!"
     
     IF NOT DEFINED inputuserframerate (
         ECHO VAR is undefined.
@@ -599,7 +624,7 @@ cls
     goto STARTMENU
 
 
-rem #####################################################
+REM #####################################################
 :sub_Q
 cls
     TITLE Set Compression Quality
@@ -674,7 +699,7 @@ cls
     )
 
 
-rem #####################################################
+REM #####################################################
 :sub_V
     cls
     ffmpeg -version
@@ -684,21 +709,21 @@ rem #####################################################
     GOTO STARTMENU
 
 
-rem #####################################################
+REM #####################################################
 :RESTART
 
     ECHO ####  ALL DONE.
     ECHO.
     GOTO:STARTMENU
 
-rem #####################################################
+REM #####################################################
 :error
     ECHO.
     ECHO Press any key to exit.
     PAUSE >nul
     GOTO:EXIT
 
-rem #####################################################
+REM #####################################################
 :EXIT
     endlocal
     REM setlocal disableextensions disabledelayedexpansion
